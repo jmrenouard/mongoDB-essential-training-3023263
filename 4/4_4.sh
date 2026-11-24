@@ -12,7 +12,7 @@ db.inventory.findOne(
     {
         $or: [
             { "variations.variation": "Blue" },
-            { "variations.variation": "Green" }
+            { "variations.variation": "Green" },
             { "variations.variation": "Teal" },
         ]
     }

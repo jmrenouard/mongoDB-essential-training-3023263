@@ -6,7 +6,7 @@ mkdir -p m{1,2,3}/db
 mongod --replSet myReplSet --dbpath ./m1/db --logpath ./m1/mongodb.log --port 27017 --fork --keyFile ./keyfile
 mongod --replSet myReplSet --dbpath ./m2/db --logpath ./m2/mongodb.log --port 27018 --fork --keyFile ./keyfile
 mongod --replSet myReplSet --dbpath ./m3/db --logpath ./m3/mongodb.log --port 27019 --fork --keyFile ./keyfile
-mongosh “mongodb://localhost:27017”
+mongosh "mongodb://localhost:27017"
 rs.initiate()
 use admin
 db.createUser({user: 'naomi', pwd: passwordPrompt(), roles: ["root"]})
