@@ -19,18 +19,18 @@ Expected output prints `1000` records for each of the 3 datasets (`inventory.jso
 
 ## Step 2 — Verify Replica Set YAML Configurations
 
-Parse `2/m1.conf`, `2/m2.conf`, and `2/m3.conf` and confirm matching `mongodb-essentials-rs` names and `localhost` ports (`27017`–`27019`):
+Parse `2/m1.conf`, `2/m2.conf`, and `2/m3.conf` with Python stdlib and confirm matching `mongodb-essentials-rs` names and `localhost` ports (`27017`–`27019`):
 
 ```bash
-python -B -c "import yaml, pathlib; [print(p.name, yaml.safe_load(p.read_text())['net'], yaml.safe_load(p.read_text())['replication']) for p in sorted(pathlib.Path('2').glob('m*.conf'))]"
+python -B -c "import pathlib, re; [print(p.name, dict(re.findall(r'^\s+(bindIp|port|replSetName):\s*(\S+)', p.read_text(encoding='utf-8'), re.M))) for p in sorted(pathlib.Path('2').glob('m*.conf'))]"
 ```
 
 Expected output:
 
 ```text
-m1.conf {'bindIp': 'localhost', 'port': 27017} {'replSetName': 'mongodb-essentials-rs'}
-m2.conf {'bindIp': 'localhost', 'port': 27018} {'replSetName': 'mongodb-essentials-rs'}
-m3.conf {'bindIp': 'localhost', 'port': 27019} {'replSetName': 'mongodb-essentials-rs'}
+m1.conf {'bindIp': 'localhost', 'port': '27017', 'replSetName': 'mongodb-essentials-rs'}
+m2.conf {'bindIp': 'localhost', 'port': '27018', 'replSetName': 'mongodb-essentials-rs'}
+m3.conf {'bindIp': 'localhost', 'port': '27019', 'replSetName': 'mongodb-essentials-rs'}
 ```
 
 ## Step 3 — Verify Shell Setup Scripts Syntax

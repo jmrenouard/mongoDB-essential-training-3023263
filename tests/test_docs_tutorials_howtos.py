@@ -7,6 +7,7 @@ import json
 import os
 import py_compile
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -239,6 +240,43 @@ class TestEssentialTrainingDocsAndLabs(unittest.TestCase):
         node_src = (ROOT / "7" / "nodejs" / "index.js").read_text(encoding="utf-8")
         self.assertIn("mongodb://localhost:27017", node_src)
         self.assertNotIn("0.0.0.0:27017", node_src)
+
+    def test_tutorial_01_commands_execute_with_stdlib_and_howto_rollback_matches(self) -> None:
+        """Execute Tutorial 01 Step 1 and Step 2 stdlib commands and verify How-To 01 rollback paths."""
+        tut_path = DOCS_DIR / "01-tutorials" / "01-datasets-and-configs-lab.md"
+        _, tut_blocks = _split_prose_and_code(tut_path.read_text(encoding="utf-8"))
+        bash_blocks = [body.strip() for _, lang, _, body in tut_blocks if lang == "bash"]
+        text_blocks = [body.strip() for _, lang, _, body in tut_blocks if lang == "text"]
+        self.assertGreaterEqual(len(bash_blocks), 2)
+        self.assertGreaterEqual(len(text_blocks), 1)
+
+        step_outputs: list[str] = []
+        for cmd in bash_blocks[:2]:
+            tokens = shlex.split(cmd)
+            self.assertEqual(tokens[:3], ["python", "-B", "-c"])
+            self.assertNotIn("yaml", tokens[3])
+            res = subprocess.run(
+                [sys.executable, *tokens[1:]],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                timeout=30,
+            )
+            self.assertEqual(res.returncode, 0, f"Tutorial 01 command failed: {res.stderr}")
+            step_outputs.append(res.stdout.strip())
+
+        for ds in ("inventory.json 1000", "movies.json 1000", "orders.json 1000"):
+            self.assertIn(ds, step_outputs[0])
+        self.assertEqual(step_outputs[1], text_blocks[0])
+
+        howto = (DOCS_DIR / "02-how-to-guides" / "01-initialize-replica-set-and-import-datasets.md").read_text(
+            encoding="utf-8"
+        )
+        rollback_section = howto.split("## Rollback", 1)[1]
+        self.assertIn("cd ..", rollback_section)
+        self.assertIn(r'pkill -f "mongod -f m[123]\.conf" || true', rollback_section)
+        self.assertIn("rm -rf 2/keyfile 2/m1/db 2/m2/db 2/m3/db 2/m*/mongod.log", rollback_section)
 
     def test_multi_runtime_driver_syntax_and_mocked_python_execution(self) -> None:
         """Verify py_compile + mocked Python driver flow plus bash/node/php syntax checks when available."""

@@ -61,10 +61,11 @@ NOTE: Each `mongoimport` command prompts for the `naomi` user password configure
 
 ## Rollback
 
-Stop the three lab `mongod` instances and delete local `keyfile` and `m*/db` folders:
+Return to the repository root. Stop the three `mongod` instances and remove `keyfile`, `m*/db`, and log files:
 
 ```bash
-pkill -f "2/m[123].conf" || true
+cd ..
+pkill -f "mongod -f m[123]\.conf" || true
 rm -rf 2/keyfile 2/m1/db 2/m2/db 2/m3/db 2/m*/mongod.log
 ```
 
