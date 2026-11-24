@@ -12,7 +12,7 @@ mongod -f m3.conf
 mongosh
 use admin
 config = {
-    _id: "mongodb-essential-rs",
+    _id: "mongodb-essentials-rs",
     members: [
         { _id: 0, host: "localhost:27017" },
         { _id: 1, host: "localhost:27018" },
@@ -22,7 +22,5 @@ config = {
 rs.initiate(config)
 db.createUser({user: 'naomi', pwd: passwordPrompt(), roles: ["root"]})
 db.getSiblingDB("admin").auth("naomi")
-rs.add("localhost:27018")
-rs.add("localhost:27019")
 rs.status()
 db.serverStatus()['repl']

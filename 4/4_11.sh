@@ -1,5 +1,5 @@
 use order_app
-db.oders.insertMany([
+db.orders.insertMany([
     {
         "time": Date(),
         "items": [{

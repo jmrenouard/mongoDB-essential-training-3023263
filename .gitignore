@@ -2,3 +2,12 @@
 node_modules
 .tmp
 npm-debug.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+env/
+vendor/
+keyfile
+m*/db/
+*.log

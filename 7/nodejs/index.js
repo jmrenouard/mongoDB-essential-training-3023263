@@ -6,7 +6,7 @@ main().catch(err => console.log(err));
 async function main() {
   config();
 
-  const uri = 'mongodb://0.0.0.0:27017/admin?retryWrites=true&w=majority';
+  const uri = 'mongodb://localhost:27017/admin?retryWrites=true&w=majority';
 
   await mongoose.connect(uri, {
     dbName: "sample_data",

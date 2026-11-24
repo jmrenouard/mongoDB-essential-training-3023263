@@ -28,7 +28,7 @@ db.inventory.aggregate( [
         $merge: {
             into: "purple",
             on: "_id",
-            whenMatched: "keepExisting"
+            whenMatched: "keepExisting",
             whenNotMatched: "insert"
         }
     }

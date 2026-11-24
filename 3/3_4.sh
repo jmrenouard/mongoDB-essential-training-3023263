@@ -1,2 +1,2 @@
 db.authors.find()
-db.createIndex({ name: 1 })
+db.authors.createIndex({ name: 1 })
